@@ -19,7 +19,6 @@ A JWT consists of three Base64-encoded parts separated by dots: `header.payload.
 
 ---
 
-// ...existing code...
 ### Common JWT Vulnerabilities & Fixes
 
 #### 1. Sensitive Data Exposure
@@ -92,7 +91,6 @@ A JWT consists of three Base64-encoded parts separated by dots: `header.payload.
     elif "HS" in algorithm:
         payload = jwt.decode(token, self.secret, algorithms=["HS256", "HS384", "HS512"])
     ```
-// ...existing code...
 
 #### 6. Improper Lifetime Management
 -   **Vulnerability**: Tokens are issued without an expiration claim (`exp`) or with a very long lifetime. If a token is stolen, it grants the attacker persistent access. Unlike session cookies, JWTs cannot be easily invalidated on the server side without extra mechanisms (like a blocklist).
