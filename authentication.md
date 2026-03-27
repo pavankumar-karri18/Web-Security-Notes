@@ -1,3 +1,63 @@
+### Session Management
+
+#### Introduction
+Since the HTTP protocol is stateless, web applications use sessions to track users and maintain state across multiple requests. Effective session management is crucial for security.
+
+#### The Four Stages of the Session Lifecycle
+1.  **Creation**: A session is created when a user first visits an application. An *authenticated session* is created after the user provides valid credentials.
+2.  **Tracking**: The application issues a session identifier (like a cookie or token) which is sent with each subsequent request. The server uses this identifier to retrieve the user's session data.
+3.  **Expiry**: Sessions must have a defined lifetime. If an expired session identifier is submitted, the server should reject it and require the user to re-authenticate.
+4.  **Termination**: When a user logs out, the server must invalidate the current session identifier, even if its lifetime has not expired.
+
+#### The IAAA Model for Security
+A framework for understanding access control:
+-   **Identification**: A user claims an identity (e.g., providing a username).
+-   **Authentication**: The system verifies the user's claimed identity (e.g., checking a password).
+-   **Authorization**: The system determines if the authenticated user has the necessary rights to perform a requested action.
+-   **Accountability**: The system records user actions to create an audit trail.
+
+---
+
+### Types of Sessions: Cookies vs. Tokens
+
+#### Cookies
+-   **Mechanism**: The server sends a `Set-Cookie` header to the browser, which then automatically includes the cookie in every subsequent request to that domain.
+-   **Key Attributes**:
+    -   `Secure`: Transmit only over HTTPS.
+    -   `HttpOnly`: Prevent access from client-side JavaScript (mitigates XSS).
+    -   `Expires`: Defines the cookie's lifetime.
+    -   `SameSite`: Controls whether the cookie is sent with cross-site requests (mitigates CSRF).
+-   **Management**: Handled automatically by the browser.
+-   **Vulnerability**: Prone to Cross-Site Request Forgery (CSRF) if not configured properly, as browsers automatically attach cookies to requests.
+
+#### Tokens (e.g., JWT)
+-   **Mechanism**: The server issues a token which the client-side application code must manually store (e.g., in Local Storage) and attach to requests, typically in the `Authorization: Bearer <token>` header.
+-   **Management**: Handled manually by the client-side application logic.
+-   **Vulnerability**: As tokens are not sent automatically by the browser, they are inherently protected against traditional CSRF attacks. However, if stored in Local Storage, they can be stolen via Cross-Site Scripting (XSS) attacks.
+
+---
+
+### Common Session Management Vulnerabilities
+
+#### 1. Issues in Session Creation
+-   **Weak Session Identifiers**: Using predictable or easily guessable values for session IDs (e.g., a Base64-encoded username).
+-   **Controllable Session Values (JWTs)**: This relates to JWT vulnerabilities like no signature verification, allowing an attacker to control the session content.
+-   **Session Fixation**: An attacker tricks a user into using a session identifier known to the attacker. If the application fails to generate a new session ID upon login, the attacker can hijack the user's authenticated session.
+-   **Insecure Transmission**: The session identifier is transmitted insecurely. A common example is a post-authentication redirect from an auth server to an application server over an insecure channel or to a URL an attacker can control.
+
+#### 2. Issues in Session Tracking
+-   **Authorization Bypass**:
+    -   **Vertical Bypass**: A non-admin user accessing admin functions.
+    -   **Horizontal Bypass**: A user accessing another user's data. This occurs when the application fails to verify that the logged-in user is authorized to access the specific data they are requesting.
+-   **Insufficient Logging**: Lack of detailed logs makes it difficult to investigate incidents. In a session hijacking scenario, the attacker's actions would appear legitimate without proper accountability.
+
+#### 3. Issues in Session Expiry
+-   **No Expiry or Long Lifetime**: If a session never expires, a stolen session token grants an attacker persistent access to the user's account, significantly increasing the window of opportunity for an attack.
+
+#### 4. Issues in Session Termination
+-   **Improper Invalidation**: If logging out only removes the session token from the client-side but doesn't invalidate it on the server-side, an attacker who has previously stolen the token can continue to use it until it expires.
+
+
 ### JWT (JSON Web Tokens)
 
 #### Introduction
