@@ -69,7 +69,7 @@ A JWT consists of three Base64-encoded parts separated by dots: `header.payload.
     wget https://raw.githubusercontent.com/wallarm/jwt-secrets/master/jwt.secrets.list
     # Use hashcat with a wordlist to find the secret key.
     # Mode 16500 is for JWT.
-    hashcat -m 16500 -a 0 captured_jwt.txt common_secrets.list
+    hashcat -m 16500 -a 0 jwt.txt jwt.secrets.list
     ```
 -   **Fix**: Use a long, complex, and randomly generated secret for symmetric signing algorithms.
 
