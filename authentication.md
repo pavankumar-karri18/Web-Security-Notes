@@ -65,6 +65,8 @@ A JWT consists of three Base64-encoded parts separated by dots: `header.payload.
 -   **Vulnerability**: If a weak or guessable secret is used for a symmetric algorithm (like HS256), an attacker can brute-force the secret using tools like `hashcat` or `johntheripper`. Once the secret is found, they can forge any token they want.
 -   **Attack**: The attacker captures a valid JWT and uses a dictionary of common secrets to try and crack the signature. Once the weak secret (e.g., 'secret123') is discovered, they can create new, valid tokens with any payload they desire, such as one granting admin privileges.
     ```bash
+    # Download a list of common secrets
+    wget https://raw.githubusercontent.com/wallarm/jwt-secrets/master/jwt.secrets.list
     # Use hashcat with a wordlist to find the secret key.
     # Mode 16500 is for JWT.
     hashcat -m 16500 -a 0 captured_jwt.txt common_secrets.list
